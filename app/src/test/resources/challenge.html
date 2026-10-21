@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站正在加载中...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+
+    <script>
+        // 获取目标路径
+        function getTargetPath() {
+            var rawPath = "%2F";
+            try {
+                return decodeURIComponent(rawPath);
+            } catch(e) {
+                return rawPath;
+            }
+        }
+
+        // 兼容性函数：创建XMLHttpRequest对象
+        function createXMLHttpRequest() {
+            if (window.XMLHttpRequest) {
+                return new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                try {
+                    return new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                }
+            }
+            return null;
+        }
+
+        // 简化的哈希函数
+        function simpleHash(str) {
+            var hash = 0;
+            if (str.length === 0) return hash;
+            for (var i = 0; i < str.length; i++) {
+                var char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        // 执行动态验证
+        function performDynamicValidation() {
+            try {
+                // 简化的自动化工具检测
+                var isAutomated = !!(window.navigator && (
+                    window.navigator.webdriver || 
+                    window.callPhantom || 
+                    window._phantom || 
+                    window.phantom
+                ));
+                
+                if (isAutomated) {
+                    return;
+                }
+                
+                // 简化的浏览器特征收集
+                var browserInfo = {
+                    userAgent: (window.navigator && window.navigator.userAgent) || '',
+                    language: (window.navigator && window.navigator.language) || '',
+                    platform: (window.navigator && window.navigator.platform) || '',
+                    screen: {
+                        width: (window.screen && window.screen.width) || 0,
+                        height: (window.screen && window.screen.height) || 0,
+                        colorDepth: (window.screen && window.screen.colorDepth) || 0
+                    },
+                    timezoneOffset: (new Date()).getTimezoneOffset ? (new Date()).getTimezoneOffset() : 0,
+                    hasTouchEvents: 'ontouchstart' in window
+                };
+                
+                // 生成挑战ID和计算结果
+                var challengeId = 'Hy9lpUJ6F9y4Wk1O0f78gDP0JCW8uGwT';
+                var a = 24;
+                var b = 86;
+                var operator = '+';
+                
+                // 执行计算
+                var result;
+                if (operator === '+') {
+                    result = a + b;
+                } else if (operator === '-') {
+                    result = a - b;
+                } else { // *
+                    result = a * b;
+                }
+                
+                // 简化的DOM操作
+                var div = document.createElement('div');
+                div.style.display = 'none';
+                div.id = 'challenge_' + Math.random().toString(36).substr(2, 9);
+                document.body.appendChild(div);
+                
+                var hashValue = simpleHash(challengeId + result + (window.navigator ? window.navigator.userAgent.substring(0, 10) : ''));
+                
+                var xhr = createXMLHttpRequest();
+                if (!xhr) {
+                    return;
+                }
+                
+                xhr.open('POST', '/dynamic_challenge', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                var response = JSON.parse(xhr.responseText);
+                                if (response.success) {
+                                    // 验证成功后，设置cookie并跳转
+                                    document.cookie = "client_id=" + response.client_id + "; path=/; max-age=86400; SameSite=Lax";
+                                    
+                                    // 短暂延迟后跳转到目标页面
+                                    setTimeout(function() {
+                                        window.location.href = getTargetPath() || '/';
+                                    }, 300);
+                                }
+                            } catch (e) {
+                                // JSON解析失败，直接跳转
+                                setTimeout(function() {
+                                    window.location.href = getTargetPath() || '/';
+                                }, 300);
+                            }
+                        }
+                    }
+                };
+                
+                // 发送验证请求
+                xhr.send(JSON.stringify({
+                    challenge_id: challengeId,
+                    answer: result,
+                    browser_info: browserInfo,
+                    hash: hashValue
+                }));
+            } catch (error) {
+                // 发生错误，直接跳转
+                setTimeout(function() {
+                    window.location.href = getTargetPath() || '/';
+                }, 300);
+            }
+        }
+        
+        // 设置最大等待时间
+        var maxWaitTime = 8000;
+        var timeoutId = setTimeout(function() {
+            // 超时后直接跳转
+            window.location.href = getTargetPath() || '/';
+        }, maxWaitTime);
+        
+        // 开始验证过程
+        performDynamicValidation();
+    </script>
+</body>
+</html>
